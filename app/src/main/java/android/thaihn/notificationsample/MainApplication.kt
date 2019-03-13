@@ -1,3 +1,5 @@
+package android.thaihn.notificationsample
+
 import android.app.Application
 import com.google.gson.Gson
 

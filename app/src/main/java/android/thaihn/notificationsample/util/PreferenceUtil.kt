@@ -2,6 +2,7 @@ package android.thaihn.notificationsample.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.thaihn.notificationsample.MainApplication
 
 class SharedPrefs private constructor() {
     private val mSharedPreferences: SharedPreferences

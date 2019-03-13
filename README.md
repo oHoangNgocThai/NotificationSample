@@ -93,3 +93,4 @@ FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( MyActivit
     * `Notification`: Chứa các thông tin cơ bản cần có của 1 thông báo như **title**, **body**, **icon**, **tag**, **click_action**, **android_channel_id**. Thông thường sẽ không cần dùng đến hết cả những trường trên, chỉ là nếu ứng dụng không hoạt động hoặc không có kết nối thì hệ thống sẽ dựa vào những trường này để hiển thị thông báo mặc định của hệ thống.
     * `data`: Phần này quan trọng cho việc gửi về những thông tin cần thiết khác ở dạng **Map<String,String>**. Khi cần custom thông báo hoặc gửi những dữ liệu dành cho việc handle click thì sẽ rất cần thiết.
     
+* Khi ứng dụng đang chạy thì những notification được gửi về sẽ được trả về trong hàm **onMessageReceived** trong MessagingService. Nếu ứng dụng đang tắt hoặc không có kết nối, notification sau đó sẽ được hệ thống Android gửi về như thông báo bình thường.
