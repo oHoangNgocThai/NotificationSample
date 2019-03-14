@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.thaihn.notificationsample.MainApplication
 
-class SharedPrefs private constructor() {
+class PreferenceUtil private constructor() {
     private val mSharedPreferences: SharedPreferences
 
     init {
@@ -71,13 +71,13 @@ class SharedPrefs private constructor() {
 
     companion object {
         private const val PREFS_NAME = "share_prefs"
-        private var mInstance: SharedPrefs? = null
-        val instance: SharedPrefs
+        private var mInstance: PreferenceUtil? = null
+        val instance: PreferenceUtil
             get() {
                 if (mInstance == null) {
-                    mInstance = SharedPrefs()
+                    mInstance = PreferenceUtil()
                 }
-                return mInstance as SharedPrefs
+                return mInstance as PreferenceUtil
             }
     }
 

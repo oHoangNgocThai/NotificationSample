@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NotificationSample</string>
+    <string name="notification_action_more">MORE</string>
 </resources>
