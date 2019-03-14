@@ -1,11 +1,13 @@
 package android.thaihn.notificationsample.ui
 
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.RemoteInput
 import android.support.v7.app.AppCompatActivity
 import android.thaihn.notificationsample.R
 import android.thaihn.notificationsample.databinding.ActivityMainBinding
+import android.thaihn.notificationsample.entity.DataNotification
 import android.thaihn.notificationsample.util.Constant
 import android.thaihn.notificationsample.util.NotificationUtil
 import android.thaihn.notificationsample.util.PreferenceUtil
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        handleDirectionNotifcation()
         handleReplyInput()
     }
 
@@ -42,6 +45,24 @@ class MainActivity : AppCompatActivity() {
             val input = it.getCharSequence(NotificationUtil.KEY_TEXT_REPLY).toString()
             mainBinding.tvMain.text = input
         }
+    }
 
+    private fun handleDirectionNotifcation() {
+        val data = parserDataFromBundle(intent.extras)
+        if (data.type != null) {
+            startActivity(Intent(this, DetailsActivity::class.java))
+        } else {
+
+        }
+    }
+
+
+    private fun parserDataFromBundle(bundle: Bundle?): DataNotification {
+        return DataNotification(
+            bundle?.getString(NotificationUtil.DATA_TYPE),
+            bundle?.getString(NotificationUtil.DATA_CHANNEL),
+            bundle?.getString(NotificationUtil.DATA_SENDER_ID),
+            bundle?.getString(NotificationUtil.DATA_SENDER_AVATAR)
+        )
     }
 }

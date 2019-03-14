@@ -86,7 +86,7 @@ FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( MyActivit
 
 # Handle Notification
 
-## Receive Notification
+## Receive Notification Service
 > Notification được gửi về ứng dụng sẽ được service nhận qua `RemoteMessage` lưu trữ các thông tin cần thiết.
 * **RemoteMessage**: Những thông tin của notification được lưu trữ bên trong object này, có thể chú ý đến 2 phần chính là `notification` và `data`.
     
@@ -306,3 +306,22 @@ NotificationManagerCompat.from(this).apply {
     * **cancel()**: Truyền vào notification id để remove notification.
     * **cancelAll()**: Xóa toàn bộ thông báo
     * **setTimeoutAfter()**: Xóa thông báo sau một khoảng thời gian nhất định.
+    
+## Handle Action
+* Nếu khi ứng dụng còn đang chạy, notification sẽ được nhận ở trong service, bạn có thể xử lý việc click action và di chuyển đến màn hình mong muốn.
+* Nhưng nếu trong trường hợp tắt mạng hoặc tắt máy. Lúc này sẽ không có thông báo được hiện, đợi khi có mạng hiện lên thì hệ thống sẽ tự động hiển thị các thông báo chưa được nhận. Vì vậy khi click action sẽ chỉ mở ra được màn hình đầu tiên của ứng dụng, không direct sang đúng màn hình cần thiết. Vậy nên phải xử lý intent bên trong activity đầu tiên mở ra, data sẽ được gửi kèm vào trong đó ở dạng **extra** của Bundle:
+
+```
+
+
+private fun parserDataFromBundle(bundle: Bundle?): DataNotification {
+        return DataNotification(
+            bundle?.getString(NotificationUtil.DATA_TYPE),
+            bundle?.getString(NotificationUtil.DATA_CHANNEL),
+            bundle?.getString(NotificationUtil.DATA_SENDER_ID),
+            bundle?.getString(NotificationUtil.DATA_SENDER_AVATAR)
+        )
+    }
+```
+> Nếu data có dữ liệu thì là do notification gửi đến, ta lấy được data bằng **intent.extra**, nếu không có thì là start activity với logic bình thường.
+
