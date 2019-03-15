@@ -86,6 +86,42 @@ FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( MyActivit
 
 # Handle Notification
 
+## Push Notification
+
+* Bạn có thể gửi thông báo mà sử dụng trên Firebase console theo hướng dẫn tại [đây](https://firebase.google.com/docs/cloud-messaging/android/first-message)
+* Để push notification được cho các device, chúng ta cần chạy ứng dụng và gửi các **refreshToken** lên server hoặc Firebase Database để sử dụng cho việc gửi thông báo.
+* Việc thực hiện gửi thông báo tới các device của client, có thể được thực hiện bằng việc gửi request lên link của Firebase với các thông số cụ thể, thông thường sẽ có các trường `to`, `notification`, `data`. 
+* Việc đầu tiên là gửi request với body là dữ liệu ở dạng `Json`, trong đó phải có trường `to` để chỉ định người được nhận thông báo, `notification` để chỉ những thông tin cơ bản của thông báo, đây là ví dụ khi push notification bằng Android device:
+
+```
+fun pushNotification(refreshToken: String) {
+        val jsonNoti = JSONObject().apply {
+            put(Constant.NOTI_BODY, "Demo message")
+            put(Constant.NOTI_ICON, "R.drawable.luffy")
+            put(Constant.NOTI_TITLE, "Username")
+            put(Constant.NOTI_CLICK_ACTION, ".MainActivity")
+        }
+        val jsonData = JSONObject().apply {
+            put(Constant.NOTI_CHAT, "Object to json")
+            put(Constant.NOTI_TYPE, "chat")
+        }
+        val jsonRoot = JSONObject().apply {
+            put(Constant.NOTI_TO, refreshToken)
+            put(Constant.NOTI_NOTIFICATION, jsonNoti)
+            put(Constant.NOTI_DATA, jsonData)
+        }
+    }
+```
+> Việc gửi thông báo từ đâu cũng không quan trọng, có thể là từ server của bạn, từ client, từ chính Firebase sử dụng Firebase Function. 
+
+* Sau đó là gửi request lên link https://fcm.googleapis.com/fcm/send và method sử dụng là `POST`.
+* Thêm header là `Authorization` chính là key của project ở trên Firebase console, có nó thì mới gửi lên thành công được. Key này được lấy ở trong Firebase consoler theo đường dẫn sau: `Project Setting\Cloud Messagin` và tìm đến phần `Legacy server key`. 
+* Khi gửi thông báo thành công, api sẽ trả về cho bạn những thông tin cần thiết như việc gửi đi bao nhiêu thông báo thành công cũng như thất bại, ví dụ như sau:
+
+```
+{"multicast_id":7819227569294632575,"success":1,"failure":0,"canonical_ids":0, "results":[{"message_id":"0:1505380615594006%4b0b45c44b0b45c4"}]}
+```
+
 ## Receive Notification Service
 > Notification được gửi về ứng dụng sẽ được service nhận qua `RemoteMessage` lưu trữ các thông tin cần thiết.
 * **RemoteMessage**: Những thông tin của notification được lưu trữ bên trong object này, có thể chú ý đến 2 phần chính là `notification` và `data`.
@@ -115,8 +151,6 @@ private fun parserNotification(remoteMessage: RemoteMessage?) {
     }
 }
 ```
-
-## Send Notification
 
 ## Create Notification
 > Sau khi đã nhận dữ liệu notification từ service về, việc tiếp theo cần làm là hiển thị chúng lên giao diện của người dùng.
@@ -404,3 +438,5 @@ fun startMusic() {
 ```
 
 # Notification Advance
+
+## Custom Notification Layout

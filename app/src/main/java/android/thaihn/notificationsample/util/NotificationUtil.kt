@@ -17,8 +17,11 @@ import android.thaihn.notificationsample.services.SampleMessagingService
 import android.thaihn.notificationsample.ui.DetailsActivity
 import android.thaihn.notificationsample.ui.MainActivity
 import android.thaihn.notificationsample.ui.MyBroadcast
+import android.util.Log
 import com.google.firebase.messaging.RemoteMessage
+import org.json.JSONException
 import org.json.JSONObject
+import java.util.HashMap
 
 class NotificationUtil(context: Context) {
 
@@ -160,7 +163,7 @@ class NotificationUtil(context: Context) {
     }
 
 
-    fun createNotificationBuilder(
+    private fun createNotificationBuilder(
         data: DataNotification?,
         notification: RemoteMessage.Notification?,
         intent: Intent
@@ -203,5 +206,27 @@ class NotificationUtil(context: Context) {
             )
         }
         return null
+    }
+
+    fun pushNotification(refreshToken: String) {
+        val jsonNoti = JSONObject().apply {
+            put(Constant.NOTI_BODY, "Demo message")
+            put(Constant.NOTI_ICON, "R.drawable.luffy")
+            put(Constant.NOTI_TITLE, "Username")
+            put(Constant.NOTI_CLICK_ACTION, ".MainActivity")
+        }
+        val jsonData = JSONObject().apply {
+            put(Constant.NOTI_CHAT, "Object to json")
+            put(Constant.NOTI_TYPE, "chat")
+        }
+        val jsonRoot = JSONObject().apply {
+            put(Constant.NOTI_TO, refreshToken)
+            put(Constant.NOTI_NOTIFICATION, jsonNoti)
+            put(Constant.NOTI_DATA, jsonData)
+        }
+
+        // Create request to link https://fcm.googleapis.com/fcm/send with method is POST
+        // Don't forget add Header is: Authorization:Key=AIzaSyBzQM...
+        // Key server get from FireBase console: Project Setting -> Cloud Messaging -> Legacy server key
     }
 }
