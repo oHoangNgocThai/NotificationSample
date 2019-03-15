@@ -116,6 +116,8 @@ private fun parserNotification(remoteMessage: RemoteMessage?) {
 }
 ```
 
+## Send Notification
+
 ## Create Notification
 > Sau khi đã nhận dữ liệu notification từ service về, việc tiếp theo cần làm là hiển thị chúng lên giao diện của người dùng.
 
@@ -308,12 +310,13 @@ NotificationManagerCompat.from(this).apply {
     * **setTimeoutAfter()**: Xóa thông báo sau một khoảng thời gian nhất định.
     
 ## Handle Action
+
+### When app off or disable network
 * Nếu khi ứng dụng còn đang chạy, notification sẽ được nhận ở trong service, bạn có thể xử lý việc click action và di chuyển đến màn hình mong muốn.
+
 * Nhưng nếu trong trường hợp tắt mạng hoặc tắt máy. Lúc này sẽ không có thông báo được hiện, đợi khi có mạng hiện lên thì hệ thống sẽ tự động hiển thị các thông báo chưa được nhận. Vì vậy khi click action sẽ chỉ mở ra được màn hình đầu tiên của ứng dụng, không direct sang đúng màn hình cần thiết. Vậy nên phải xử lý intent bên trong activity đầu tiên mở ra, data sẽ được gửi kèm vào trong đó ở dạng **extra** của Bundle:
 
 ```
-
-
 private fun parserDataFromBundle(bundle: Bundle?): DataNotification {
         return DataNotification(
             bundle?.getString(NotificationUtil.DATA_TYPE),
@@ -323,5 +326,81 @@ private fun parserDataFromBundle(bundle: Bundle?): DataNotification {
         )
     }
 ```
+
 > Nếu data có dữ liệu thì là do notification gửi đến, ta lấy được data bằng **intent.extra**, nếu không có thì là start activity với logic bình thường.
 
+### Control service play music
+
+* Tạo notification với các action như **play**, **pause**, **next**, **open**, ... để control được việc play nhạc như sau:
+
+```
+private fun createNotification() {
+        val intentItem = Intent(this, PlayMusicActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            action = ACTION_OPEN_APP
+        }
+        val stackBuilder = TaskStackBuilder.create(this)
+        stackBuilder.addNextIntentWithParentStack(intentItem)
+        mPendingItem = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val intentNext = Intent(this, MusicPlayerService::class.java).apply {
+            action = ACTION_NEXT
+        }
+        mPendingNext = PendingIntent.getService(this, 0, intentNext, 0)
+
+        val intentPrevious = Intent(this, MusicPlayerService::class.java).apply {
+            action = ACTION_PREVIOUS
+        }
+        mPendingPrevious = PendingIntent.getService(this, 0, intentPrevious, 0)
+
+        val intentPlay = Intent(this, MusicPlayerService::class.java).apply {
+            action = ACTION_PLAY_PAUSE
+        }
+        mPendingPlay = PendingIntent.getService(this, 0, intentPlay, 0)
+        updateNotification()
+    }
+```
+
+* Những action trên sẽ được gửi về hàm  **onStartCommand()** bên trong service để xử lý: 
+
+```
+val action = intent?.action ?: return
+        when (action) {
+            ACTION_OPEN_APP -> {
+                playSong(CURRENT_POSITION)
+                updateNotification()
+            }
+            ACTION_NEXT -> {
+                playNextSong()
+                updateNotification()
+            }
+            ACTION_PREVIOUS -> {
+                playPreviousSong()
+                updateNotification()
+            }
+            ACTION_PLAY_PAUSE -> {
+                chooseState()
+                updateNotification()
+            }
+        }
+```
+
+* Sau đó gửi dữ liệu cập nhật ra ngoài giao diện bằng broadcast: 
+
+```
+fun startMusic() {
+        mMediaPlayer?.start()
+        mState = MusicState.PLAYING.value
+        updateNotification()
+        sendBroadcast(Intent(ACTION_PLAYING))
+    }
+
+    fun pauseMusic() {
+        mMediaPlayer?.pause()
+        mState = MusicState.PAUSE.value
+        updateNotification()
+        sendBroadcast(Intent(ACTION_PAUSE))
+    }
+```
+
+# Notification Advance

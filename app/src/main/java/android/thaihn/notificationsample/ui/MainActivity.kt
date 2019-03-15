@@ -36,6 +36,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        mainBinding.btnPlayMusic.setOnClickListener {
+            startActivity(Intent(this, PlayMusicActivity::class.java))
+        }
+
         handleDirectionNotifcation()
         handleReplyInput()
     }

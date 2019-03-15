@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="detail_width_icon">48dp</dimen>
+    <dimen name="detail_margin_left">24dp</dimen>
+    <dimen name="detail_margin_top">16dp</dimen>
+    <dimen name="detail_margin_bottom">16dp</dimen>
+    <dimen name="detail_padding_image">10dp</dimen>
+
+</resources>

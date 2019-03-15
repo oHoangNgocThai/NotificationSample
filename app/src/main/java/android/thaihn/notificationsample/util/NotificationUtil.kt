@@ -160,7 +160,7 @@ class NotificationUtil(context: Context) {
     }
 
 
-    private fun createNotificationBuilder(
+    fun createNotificationBuilder(
         data: DataNotification?,
         notification: RemoteMessage.Notification?,
         intent: Intent
