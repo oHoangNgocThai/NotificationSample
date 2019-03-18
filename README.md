@@ -219,7 +219,7 @@ fun showNotification(notificationId: Int, data: DataNotification?, notification:
     }
 }
 ```
-> Trên Android 8.0, việc hiển thị thông báo cần tạo ra 1 channel để nhóm các thông báo lại với nhau. Nếu từ Android 8.0 trở xuống thì vẫn hiển thị thông báo theo như cách thông thường.
+> Trên Android 8.0, việc hiển thị thông báo cần tạo ra 1 channel để nhóm các thông báo lại với nhau. Nếu từ Android 8.0 trở xuống thì vẫn hiển thị thông báo theo như cách thông thường. Trong đó tham số Important để chỉ tầm quan trọng của thông báo đó, lần lượt là **IMPORTANCE_HIGH**, **IMPORTANCE_DEFAULT**, **IMPORTANCE_LOW**, **IMPORTANCE_MIN**.  
 
 ### Actions Notification
 * Thêm **Action** vào bên trong Notification, bạn có thể tạo ra tối đa 3 action tương ứng với 3 **PendingIntent** khác nhau. Những Intent này có thể mở ra Activity, start Service hoặc là gửi BroadCast.
@@ -494,3 +494,145 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
     builder = builder.setCustomBigContentView(getRemoteViewChat(message, time, partner, bitmap));
 }
 ```
+
+## Notification Badge
+
+* Từ Android 8.0(API 26) trở lên, sẽ xuất hiện thêm dấu chấm thông báo trên biểu tượng của icon khởi chạy ứng dụng. Người dùng có thể nhấn giữ vào icon để hiện ra các thông báo như hình dưới đây:
+ 
+[](https://developer.android.com/images/ui/notifications/badges-open_2x.png)
+
+* Theo mặc định dấu chấm này sẽ xuất hiện khi có thông báo, vì vậy nếu muốn ẩn dấu chấm đó đi thì sẽ sử dụng **setShowBadge(false)** ở trong **NotificationChannel**.
+
+```
+val mChannel = NotificationChannel(id, name, importance).apply {
+    description = descriptionText
+    setShowBadge(false)
+}
+```
+
+* Theo mặc định, mỗi thông báo sẽ được tăng một số được hiển thị trên menu, nhưng bạn có thể tự thêm số này vào ứng dụng của mình bằng phương thức **setNumber()**:
+
+```
+var notification = NotificationCompat.Builder(this@MainActivity, CHANNEL_ID)
+        .setContentTitle("New Messages")
+        .setContentText("You've received 3 new messages.")
+        .setSmallIcon(R.drawable.ic_notify_status)
+        .setNumber(messageCount)
+        .build()
+```
+
+* Khi nhấn giữ lâu vào icon khởi động sẽ hiển thị biểu tượng lớn hoặc nhỏ liên quan đến thông báo nếu có. Theo mặc định sẽ hiển thị biểu tượng lớn, nhưng bạn có thể gọi **Notification.Builder.setBadgeIconType()** và truyền vào **BADGE_ICON_SMALL** để thay đổi.
+
+## Notification group
+
+* Bắt đầu từ Android 7.0 (API 24), bạn có thể nhóm các notification vào với nhau thành 1 group để nhóm gọn và khi cần thì mở ra tất cả các notification cùng group.
+* Để tạo một Notification group ta sử dụng phương thức **setGroup()**:
+
+```
+val GROUP_KEY_WORK_EMAIL = "com.android.example.WORK_EMAIL"
+
+val newMessageNotification = NotificationCompat.Builder(this@MainActivity, CHANNEL_ID)
+        .setSmallIcon(R.drawable.new_mail)
+        .setContentTitle(emailObject.getSenderName())
+        .setContentText(emailObject.getSubject())
+        .setLargeIcon(emailObject.getSenderAvatar())
+        .setGroup(GROUP_KEY_WORK_EMAIL)
+        .build()
+```
+
+* Chúng ta cũng có thể nhóm lại các thông báo cùng với nhau nếu chúng là cùng một kiểu và chỉ cần thêm nội dung vào. Ví dụ dưới đây sẽ cho thấy việc nhóm thông báo của các email theo từng group khác nhau:
+
+```
+//use constant ID for notification used as group summary
+val SUMMARY_ID = 0
+val GROUP_KEY_WORK_EMAIL = "com.android.example.WORK_EMAIL"
+
+val newMessageNotification1 = NotificationCompat.Builder(this@MainActivity, CHANNEL_ID)
+        .setSmallIcon(R.drawable.ic_notify_email_status)
+        .setContentTitle(emailObject1.getSummary())
+        .setContentText("You will not believe...")
+        .setGroup(GROUP_KEY_WORK_EMAIL)
+        .build()
+
+val newMessageNotification2 = NotificationCompat.Builder(this@MainActivity, CHANNEL_ID)
+        .setSmallIcon(R.drawable.ic_notify_email_status)
+        .setContentTitle(emailObject2.getSummary())
+        .setContentText("Please join us to celebrate the...")
+        .setGroup(GROUP_KEY_WORK_EMAIL)
+        .build()
+
+val summaryNotification = NotificationCompat.Builder(this@MainActivity, CHANNEL_ID)
+        .setContentTitle(emailObject.getSummary())
+        //set content text to support devices running API level < 24
+        .setContentText("Two new messages")
+        .setSmallIcon(R.drawable.ic_notify_summary_status)
+        //build summary info into InboxStyle template
+        .setStyle(NotificationCompat.InboxStyle()
+                .addLine("Alex Faarborg Check this out")
+                .addLine("Jeff Chang Launch Party")
+                .setBigContentTitle("2 new messages")
+                .setSummaryText("janedoe@example.com"))
+        //specify which group this notification belongs to
+        .setGroup(GROUP_KEY_WORK_EMAIL)
+        //set this notification as the summary for the group
+        .setGroupSummary(true)
+        .build()
+
+NotificationManagerCompat.from(this).apply {
+    notify(emailNotificationId1, newMessageNotification1)
+    notify(emailNotificationId2, newMessageNotification2)
+    notify(SUMMARY_ID, summaryNotification)
+}
+```
+
+## Notification channel
+
+* Như trên cũng đã nhắc đến Android O(API 26) trở lên có thể tạo các channel cho thông báo, đây là ví dụ cho việc tạo 1 channel:
+
+```
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    // Create the NotificationChannel
+    val name = getString(R.string.channel_name)
+    val descriptionText = getString(R.string.channel_description)
+    val importance = NotificationManager.IMPORTANCE_DEFAULT
+    val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
+    mChannel.description = descriptionText
+    // Register the channel with the system; you can't change the importance
+    // or other notification behaviors after this
+    val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+    notificationManager.createNotificationChannel(mChannel)
+}
+```
+
+* Đọc cài đặt notificaiton channel của từng channel đang có bằng cách lấy ra NotificationChannel thông qua phương thức **getNotificationChannel()** và lấy ra các giá trị cài đặt như **getVibrationPattern()**, **getSound()**, **getImportance()**.
+
+* Để mở notification channel setting chúng ta cần sử dụng đối tượng Intent như sau:
+
+```
+val intent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
+    putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+    putExtra(Settings.EXTRA_CHANNEL_ID, myNotificationChannel.getId())
+}
+startActivity(intent)
+```
+
+* Để xóa một notification channel ta cần xác định được id của channel rồi làm như sau:
+
+```
+// The id of the channel.
+val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+val id: String = "my_channel_01"
+notificationManager.deleteNotificationChannel(id)
+```
+
+** Bạn cũng có thể tạo notification channel bên trong 1 group nào đó như sau: 
+
+```
+// The id of the group.
+val groupId = "my_group_01"
+// The user-visible name of the group.
+val groupName = getString(R.string.group_name)
+val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+notificationManager.createNotificationChannelGroup(NotificationChannelGroup(groupId, groupName))
+```
+
