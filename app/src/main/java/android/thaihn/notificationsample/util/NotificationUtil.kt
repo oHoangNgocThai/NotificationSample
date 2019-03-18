@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
@@ -18,6 +19,7 @@ import android.thaihn.notificationsample.ui.DetailsActivity
 import android.thaihn.notificationsample.ui.MainActivity
 import android.thaihn.notificationsample.ui.MyBroadcast
 import android.util.Log
+import android.widget.RemoteViews
 import com.google.firebase.messaging.RemoteMessage
 import org.json.JSONException
 import org.json.JSONObject
@@ -228,5 +230,16 @@ class NotificationUtil(context: Context) {
         // Create request to link https://fcm.googleapis.com/fcm/send with method is POST
         // Don't forget add Header is: Authorization:Key=AIzaSyBzQM...
         // Key server get from FireBase console: Project Setting -> Cloud Messaging -> Legacy server key
+    }
+
+    private fun getRemoteViewChat( message: String, remoteMessage: RemoteMessage, bitmap: Bitmap): RemoteViews {
+        val notificationView = RemoteViews(
+           mContext.packageName,
+            R.layout.layout_notification_chat
+        )
+        notificationView.setImageViewBitmap(R.id.imgAvatarNoti, bitmap)
+        notificationView.setTextViewText(R.id.txtMessageNoti, remoteMessage.notification?.body)
+        notificationView.setTextViewText(R.id.txtTitleNoti, remoteMessage.notification?.title)
+        return notificationView
     }
 }

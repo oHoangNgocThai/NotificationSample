@@ -440,3 +440,57 @@ fun startMusic() {
 # Notification Advance
 
 ## Custom Notification Layout
+
+1. Custom notification for content area
+* Việc custom layout cho vùng content của notification thì bạn phải thêm **NotificationCompat.DecoratedCustomViewStyle** vào trong notification. Việc này sẽ giúp cho bạn giữ lại được tất cả các thông tin mà hệ thống cung cấp sẵn như **icon**, **time stamp**, **sub-text**, **action**.
+* Để sử dụng chức năng này, trước hết chúng ta phải tạo một layout cho phần content muốn thay thế, sau đó inflate vào đối tượng **RemoteView** để gọi ra được layout đã custom hiển thị trong thông báo:
+
+```
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:text="@string/notification_title"
+    android:id="@+id/notification_title"
+    style="@style/TextAppearance.Compat.Notification.Title" />
+```
+
+* Sau đó thêm trực tiếp các **RemoteView** đã custom vào **Notification.Builder**: 
+
+```
+// Get the layouts to use in the custom notification
+val notificationLayout = RemoteViews(packageName, R.layout.notification_small)
+val notificationLayoutExpanded = RemoteViews(packageName, R.layout.notification_large)
+
+// Apply the layouts to the notification
+val customNotification = NotificationCompat.Builder(context, CHANNEL_ID)
+        .setSmallIcon(R.drawable.notification_icon)
+        .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+        .setCustomContentView(notificationLayout)
+        .setCustomBigContentView(notificationLayoutExpanded)
+        .build()
+```
+
+2. Custom full notification
+* Bạn muốn thay đổi toàn bộ layout của Notification, chúng ta sử dụng layout tự tạo và inflate vào đối tượng của **RemoteView** như sau: 
+
+```
+private fun getRemoteViewChat( message: String, remoteMessage: RemoteMessage, bitmap: Bitmap): RemoteViews {
+        val notificationView = RemoteViews(
+           mContext.packageName,
+            R.layout.layout_notification_chat
+        )
+        notificationView.setImageViewBitmap(R.id.imgAvatarNoti, bitmap)
+        notificationView.setTextViewText(R.id.txtMessageNoti, remoteMessage.notification?.body)
+        notificationView.setTextViewText(R.id.txtTitleNoti, remoteMessage.notification?.title)
+        return notificationView
+    }
+```
+
+* Sau khi tạo ra Notification Builder, cần kiểm tra xem phiên bản Android có phải là từ API 16 trở đi không mới có thể sử dụng custom notification:
+
+```
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+    builder = builder.setCustomBigContentView(getRemoteViewChat(message, time, partner, bitmap));
+}
+```
