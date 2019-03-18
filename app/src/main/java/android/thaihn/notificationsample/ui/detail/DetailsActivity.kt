@@ -1,4 +1,4 @@
-package android.thaihn.notificationsample.ui
+package android.thaihn.notificationsample.ui.detail
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle

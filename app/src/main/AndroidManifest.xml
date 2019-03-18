@@ -10,9 +10,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.PlayMusicActivity"></activity>
         <activity
-            android:name=".ui.DetailsActivity"
+            android:name=".ui.playmusic.PlayMusicActivity"
+            android:label="Play Music Sample"></activity>
+        <activity
+            android:name=".ui.detail.DetailsActivity"
             android:label="Detail Activity" />
         <activity
             android:name=".ui.MainActivity"
@@ -26,7 +28,7 @@
         </activity>
 
         <service
-            android:name=".services.SampleMessagingService"
+            android:name=".services.firebase.SampleMessagingService"
             android:enabled="true"
             android:stopWithTask="false">
             <intent-filter>

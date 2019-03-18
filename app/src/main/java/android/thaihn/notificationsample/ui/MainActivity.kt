@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity
 import android.thaihn.notificationsample.R
 import android.thaihn.notificationsample.databinding.ActivityMainBinding
 import android.thaihn.notificationsample.entity.DataNotification
+import android.thaihn.notificationsample.ui.detail.DetailsActivity
+import android.thaihn.notificationsample.ui.playmusic.PlayMusicActivity
 import android.thaihn.notificationsample.util.Constant
 import android.thaihn.notificationsample.util.NotificationUtil
 import android.thaihn.notificationsample.util.PreferenceUtil

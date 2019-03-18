@@ -1,4 +1,4 @@
-package android.thaihn.notificationsample.ui
+package android.thaihn.notificationsample.ui.detail
 
 import android.content.BroadcastReceiver
 import android.content.Context

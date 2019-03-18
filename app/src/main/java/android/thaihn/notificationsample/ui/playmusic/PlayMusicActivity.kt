@@ -1,4 +1,4 @@
-package android.thaihn.notificationsample.ui
+package android.thaihn.notificationsample.ui.playmusic
 
 import android.content.*
 import android.databinding.DataBindingUtil

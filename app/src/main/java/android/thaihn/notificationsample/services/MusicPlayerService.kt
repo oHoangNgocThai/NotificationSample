@@ -13,7 +13,7 @@ import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.app.TaskStackBuilder
 import android.thaihn.notificationsample.R
 import android.thaihn.notificationsample.entity.MusicState
-import android.thaihn.notificationsample.ui.PlayMusicActivity
+import android.thaihn.notificationsample.ui.playmusic.PlayMusicActivity
 
 class MusicPlayerService : Service(), MediaPlayer.OnPreparedListener,
     MediaPlayer.OnCompletionListener {

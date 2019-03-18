@@ -14,16 +14,13 @@ import android.support.v4.app.RemoteInput
 import android.thaihn.notificationsample.R
 import android.thaihn.notificationsample.entity.ActionType
 import android.thaihn.notificationsample.entity.DataNotification
-import android.thaihn.notificationsample.services.SampleMessagingService
-import android.thaihn.notificationsample.ui.DetailsActivity
+import android.thaihn.notificationsample.services.firebase.SampleMessagingService
+import android.thaihn.notificationsample.ui.detail.DetailsActivity
 import android.thaihn.notificationsample.ui.MainActivity
-import android.thaihn.notificationsample.ui.MyBroadcast
-import android.util.Log
+import android.thaihn.notificationsample.ui.detail.MyBroadcast
 import android.widget.RemoteViews
 import com.google.firebase.messaging.RemoteMessage
-import org.json.JSONException
 import org.json.JSONObject
-import java.util.HashMap
 
 class NotificationUtil(context: Context) {
 

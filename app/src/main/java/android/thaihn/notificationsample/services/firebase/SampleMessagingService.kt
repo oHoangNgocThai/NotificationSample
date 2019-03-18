@@ -1,4 +1,4 @@
-package android.thaihn.notificationsample.services
+package android.thaihn.notificationsample.services.firebase
 
 import android.content.Intent
 import android.thaihn.notificationsample.ui.MainActivity
